@@ -36,10 +36,10 @@ export class RoomComponent implements OnInit, OnDestroy {
   roomMode = 'default';
   results: any;
 
-  cards: Card[];
   participants: any[];
   selectedCard: number;
   closeResult: string;
+  cardsInSetting: Card[];
 
   constructor(private rxStompService: RxStompService, private route: ActivatedRoute,
               private userService: UserService, private http: HttpClient,
@@ -187,11 +187,37 @@ export class RoomComponent implements OnInit, OnDestroy {
   }
 
   open(content) {
+    this.cardsInSetting = [...this.room.cards];
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
+      this.rxStompService.publish({
+        destination: '/app/rooms/' + this.roomNo + '/cards',
+        body: JSON.stringify(this.cardsInSetting)
+      });
       this.closeResult = `Closed with: ${result}`;
     }, (reason) => {
+      this.cardsInSetting = null;
       this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
     });
+  }
+
+  public removeCardInSetting(index) {
+    this.cardsInSetting.splice(index, 1);
+  }
+
+  public addCardValueInSetting(value) {
+    if (value && Number(value)) {
+      value = Number(value);
+      const result = this.cardsInSetting.find((card) => value === card.value);
+      if (result) {
+        console.log('card already present!');
+        return;
+      } else {
+        this.cardsInSetting.push({value});
+        this.cardsInSetting.sort((leftSide, rightSide) => {
+          return leftSide.value - rightSide.value;
+        });
+      }
+    }
   }
 
   private getDismissReason(reason: any): string {

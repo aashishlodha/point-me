@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.aashish.pointme.PointMeConstants;
+import org.aashish.pointme.dto.Card;
 import org.aashish.pointme.dto.ChatMessage;
 import org.aashish.pointme.dto.Room;
 import org.aashish.pointme.dto.SessionRoom;
@@ -34,6 +35,8 @@ import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -161,6 +164,13 @@ public class RoomController {
 		System.out.println(msg.getMessage());
 		List<ChatMessage> chat = this.roomService.logChatMessage(id, msg);
 		messagingTemplate.convertAndSend("/topic/rooms/" + id + "/chat", chat);
+	}
+	
+	@MessageMapping("/rooms/{id}/cards")
+	public void handleRoomCardsUpdate(@DestinationVariable Integer id, @Payload String payload) throws JsonMappingException, JsonProcessingException {
+		List<Card> newCards = mapper.readValue(payload, new TypeReference<List<Card>>(){});
+		Room room = this.roomService.updateCards(id, newCards);
+		messagingTemplate.convertAndSend("/topic/rooms/" + id, room);
 	}
 	
 	@MessageMapping("/rooms/{id}/disconnect")

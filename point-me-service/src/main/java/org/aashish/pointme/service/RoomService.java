@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.aashish.pointme.dto.Card;
 import org.aashish.pointme.dto.ChatMessage;
 import org.aashish.pointme.dto.Room;
 import org.aashish.pointme.dto.User;
@@ -159,6 +160,12 @@ public class RoomService {
 		room.setStatus("default");
 		room.setVotingBox(null);
 		room.setVoteCounts(null);
+	}
+
+	public Room updateCards(Integer id, List<Card> newCards) {
+		Room room = this.rooms.get(id - 1);
+		room.setCards(newCards);
+		return room;
 	}
 
 }

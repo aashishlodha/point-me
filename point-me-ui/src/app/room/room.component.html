@@ -13,7 +13,11 @@
             </div> -->
             <div class="card bg-light mb-2">
                 <div class="card-header text-center"><b>Cards</b>
-                    <button style="float: right;" (click)="open(content)"><span class="oi oi-cog"></span></button>
+                    <button style="float: right;"
+                        *ngIf="user && roomOwner && user.id === roomOwner.id && roomMode === 'default'"
+                        (click)="open(content)">
+                        <span class="oi oi-cog"></span>
+                    </button>
                 </div>
                 <div class="card-body inset-shadow">
                     <div *ngIf="user && roomOwner && user.id === roomOwner.id" class="text-center">
@@ -107,6 +111,18 @@
         </button>
     </div>
     <div class="modal-body">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Enter card value"
+                #cardValueInput name="cardValueInput"
+                (keyup.enter)="addCardValueInSetting(cardValueInput.value);cardValueInput.value=''">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-success" type="button" id="button-addon2"
+                    (click)="addCardValueInSetting(cardValueInput.value);cardValueInput.value=''">Add</button>
+                </div>
+            </div>
+        <span *ngFor="let card of cardsInSetting;index as i" class="badge badge-info" style="margin-right:4px;">{{ card.value }} 
+            <button class="btn btn-danger btn-sm" (click)="removeCardInSetting(i)">x</button>
+        </span>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Save</button>
