@@ -14,6 +14,7 @@ import { InjectableRxStompConfig, RxStompService, rxStompServiceFactory } from '
 import { myRxStompConfig } from './shared/my-rx-stomp.config';
 import { UserFilterPipe } from './shared/userfilter.pipe';
 import { RoomsComponent } from './rooms/rooms.component';
+import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,10 @@ import { RoomsComponent } from './rooms/rooms.component';
       provide: RxStompService,
       useFactory: rxStompServiceFactory,
       deps: [InjectableRxStompConfig]
+    },
+    {
+      provide: LocationStrategy,
+      useClass: HashLocationStrategy
     }
   ],
   bootstrap: [AppComponent]
