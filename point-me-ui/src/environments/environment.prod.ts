@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  baseApi: 'http://localhost:8080/',
-  baseWs: 'ws://localhost:8080/'
+  baseApi: 'https://point-me-pocker.herokuapp.com/',
+  baseWs: 'ws://point-me-pocker.herokuapp.com/'
 };
