@@ -1,0 +1,116 @@
+<nav class="navbar shadow sticky-top navbar-light bg-light">
+    <span class="navbar-brand mb-0 h1">Point Me</span>
+    <span>Room No #{{roomNo}}</span>
+    <span *ngIf="roomOwner">Owner: {{ roomOwner.name }}</span>
+</nav>
+<br>
+<div class="container">
+    <div class="row" *ngIf="room">
+        <div class="col-md-9 p-0 pr-1">
+            <!-- <div class="card bg-light mb-2 mt-4">
+                <div class="card-header text-center"><b>Description</b></div>
+                <div class="card-body">This story has no desc</div>
+            </div> -->
+            <div class="card bg-light mb-2">
+                <div class="card-header text-center"><b>Cards</b>
+                    <button style="float: right;" (click)="open(content)"><span class="oi oi-cog"></span></button>
+                </div>
+                <div class="card-body inset-shadow">
+                    <div *ngIf="user && roomOwner && user.id === roomOwner.id" class="text-center">
+                        <button class="btn btn-primary" style="align-self: center;" *ngIf="roomMode === 'default'" (click)="startVoting()">Start Voting</button>
+                        <button class="btn btn-primary" style="align-self: center;" *ngIf="roomMode === 'voting'" (click)="showVotes()">Show Results</button>
+                        <button class="btn btn-primary" style="align-self: center;" *ngIf="roomMode === 'results'" (click)="reset()">Reset Room</button>
+                    </div>
+                    <div *ngIf="user && roomOwner && user.id !== roomOwner.id">
+                        <p *ngIf="roomMode === 'voting'">Please Vote: {{selectedCard}}</p>
+                        <p *ngIf="roomMode === 'default'">Voting is not started yet...</p>
+                        <p *ngIf="roomMode === 'results'">Here are the results...</p>
+                    </div>
+                    <div *ngIf="roomMode === 'default'">
+                        <app-playing-card 
+                            *ngFor="let card of room.cards"
+                            [value]="card.value"
+                            style="float:left;">
+                        </app-playing-card>
+                    </div>
+                    <div *ngIf="roomMode === 'voting'">
+                        <div class="card-deck">
+                            <app-playing-card
+                                *ngFor="let card of room.cards"
+                                [value]="card.value"
+                                style="float:left;"
+                                [selectedCard]="selectedCard"
+                                (selected)="handleCardSelection($event)">
+                            </app-playing-card>
+                        </div>
+                    </div>
+                    <div *ngIf="roomMode === 'results' && results">
+                        <div *ngFor="let result of results | keyvalue" class="row">
+                            <app-playing-card
+                                [value]="result.key" class="col-md-4">
+                            </app-playing-card>
+                            <div class="col-md-8" style="display:flex;align-items:center;">
+                                <div style="display: table-cell;">Votes: {{ result.value }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card bg-light">
+                <div class="card-header text-center"><b>Chat</b></div>
+                <div class="card-body inset-shadow">
+                    <div *ngFor="let msg of chatMessages"> <b>{{ msg.user.name }}: </b> {{ msg.message }}</div>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Enter a message" [(ngModel)]="chatMessageInput" (keyup.enter)="sendChatMessage()">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="sendChatMessage()">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br>
+        </div>
+        <div class="col-md-3 p-0 pl-1">
+            <div class="card bg-light">
+                <div class="card-header text-center"><b>Participants</b></div>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">@</span>
+                    </div>
+                    <input type="text" class="form-control" [(ngModel)]="user.name" (change)="userNameChanged()">
+                    <!-- <div class="input-group-append">
+                        <span class="input-group-text">OK</span>
+                    </div> -->
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item" *ngFor="let participant of participants | userfilter:user">
+                        {{participant.name}}&nbsp;
+                        <span *ngIf="roomMode === 'voting' && participant.voteValue !== null">(Voted)</span>
+                        <span *ngIf="roomMode === 'results'"> {{ participant.voteValue }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <br>
+    </div>
+    <div class="row" *ngIf="!room">
+        <div class="centered">
+            No Data? <button (click)="refresh()">Refresh?</button>
+        </div>
+    </div>
+</div>
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Card Deck Configuration</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Save</button>
+    </div>
+</ng-template>
+    
+<pre>{{closeResult}}</pre>

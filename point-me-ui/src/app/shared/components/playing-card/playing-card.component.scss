@@ -1,0 +1,13 @@
+@import "node_modules/bootstrap/scss/mixins/_gradients";
+
+.card {
+    @include gradient-directional(#64aaf5, #ffd6d6, 45deg);
+    // width: 10rem;
+    // height: 15rem;
+    width: 6rem;
+    height: 9rem;
+    border: 4px solid white;
+}
+.selected-card {
+    background:black;
+}

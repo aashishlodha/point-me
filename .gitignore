@@ -1,0 +1,46 @@
+/point-me-ui/node/
+
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+## UI ##
+/point-me-ui/dist
+/point-me-ui/tmp
+/point-me-ui/out-tsc
+/point-me-ui/node_modules
+/point-me-ui/HELP.md
+# profiling files
+chrome-profiler-events*.json
+speed-measure-plugin*.json
+
+## API ##
+!/point-me-service/.mvn/wrapper/maven-wrapper.jar
+**/src/main/resources/static/**
+/point-me-service/HELP.md
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+### VS Code ###
+.vscode/

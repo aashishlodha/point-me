@@ -1,0 +1,23 @@
+<div class="mx-auto">
+    <div class="btn-toolbar justify-content-between">
+        <!-- <button type="button" class="btn btn-outline-primary" (click)="getRoom()">Get a pointing room</button> -->
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Room Number" [(ngModel)]="roomNo" (keyup.enter)="joinRoom()">
+            <div class="input-group-append">
+                <button class="btn btn-outline-primary" type="button" (click)="joinRoom()">Join a pointing room</button>
+            </div>
+        </div>
+        <button class="btn btn-primary" (click)="getRoom()">Get a Room</button>
+    </div>
+    <br>
+    Rooms Catalog:
+    <ol class="list-group">
+        <li *ngFor="let room of rooms; trackBy: roomTrackByFunction" class="list-group-item">
+            <button class="btn btn-outline-primary" (click)="enterRoom(room.roomNo)">Enter</button>
+            Room #{{ room.roomNo }} 
+            <span *ngIf="room.roomOwner" class="roomOwnerInfo">Owner: {{ room.roomOwner.name }}</span>
+            <span *ngIf="!room.roomOwner" style="float: right;">Empty Room</span>
+        </li>
+    </ol>
+    <br><br>
+</div>
