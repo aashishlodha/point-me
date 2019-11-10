@@ -15,7 +15,7 @@
                 <div class="card-header text-center"><b>Cards</b>
                     <button style="float: right;"
                         *ngIf="user && roomOwner && user.id === roomOwner.id && roomMode === 'default'"
-                        (click)="open(content)">
+                        (click)="open(cardSettingsContent)">
                         <span class="oi oi-cog"></span>
                     </button>
                 </div>
@@ -103,7 +103,7 @@
         </div>
     </div>
 </div>
-<ng-template #content let-modal>
+<ng-template #cardSettingsContent let-modal>
     <div class="modal-header">
         <h4 class="modal-title" id="modal-basic-title">Card Deck Configuration</h4>
         <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
@@ -128,5 +128,23 @@
         <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Save</button>
     </div>
 </ng-template>
-    
-<pre>{{closeResult}}</pre>
+
+<ng-template #nameChangeModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Enter your name</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Enter name"
+            [(ngModel)]="nameInSetting"
+            (keyup.enter)="modal.close('Save click')">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Save</button>
+    </div>
+</ng-template>
+<!-- <pre>{{closeResult}}</pre> -->

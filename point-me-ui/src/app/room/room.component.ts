@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
@@ -18,7 +18,7 @@ import { environment } from 'src/environments/environment';
     cardInOutAnimation
   ]
 })
-export class RoomComponent implements OnInit, OnDestroy {
+export class RoomComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public room: any;
   roomNo: number;
@@ -40,6 +40,8 @@ export class RoomComponent implements OnInit, OnDestroy {
   selectedCard: number;
   closeResult: string;
   cardsInSetting: Card[];
+  nameInSetting: string;
+  @ViewChild('nameChangeModal', { static: false }) nameChangeModal;
 
   constructor(private rxStompService: RxStompService, private route: ActivatedRoute,
               private userService: UserService, private http: HttpClient,
@@ -110,6 +112,12 @@ export class RoomComponent implements OnInit, OnDestroy {
 
       this.joinToRoom();
     });
+  }
+
+  ngAfterViewInit(): void {
+    if (this.user.name === 'Anonymous User') {
+      this.openNameModal(this.nameChangeModal);
+    }
   }
 
   joinToRoom() {
@@ -193,10 +201,23 @@ export class RoomComponent implements OnInit, OnDestroy {
         destination: '/app/rooms/' + this.roomNo + '/cards',
         body: JSON.stringify(this.cardsInSetting)
       });
-      this.closeResult = `Closed with: ${result}`;
+      // this.closeResult = `Closed with: ${result}`;
     }, (reason) => {
       this.cardsInSetting = null;
-      this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+      // this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+    });
+  }
+
+  openNameModal(content) {
+    this.nameInSetting = '' + this.user.name;
+    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
+      console.log('name changed to ' + this.nameInSetting);
+      this.user.name = this.nameInSetting;
+      this.userNameChanged();
+      // this.closeResult = `Closed with: ${result}`;
+    }, (reason) => {
+      this.nameInSetting = null;
+      // this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
     });
   }
 
@@ -217,16 +238,6 @@ export class RoomComponent implements OnInit, OnDestroy {
           return leftSide.value - rightSide.value;
         });
       }
-    }
-  }
-
-  private getDismissReason(reason: any): string {
-    if (reason === ModalDismissReasons.ESC) {
-      return 'by pressing ESC';
-    } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
-      return 'by clicking on a backdrop';
-    } else {
-      return  `with: ${reason}`;
     }
   }
 
