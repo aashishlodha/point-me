@@ -15,6 +15,7 @@ import { myRxStompConfig } from './shared/my-rx-stomp.config';
 import { UserFilterPipe } from './shared/userfilter.pipe';
 import { RoomsComponent } from './rooms/rooms.component';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
+import { ReceptionComponent } from './reception/reception.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { LocationStrategy, HashLocationStrategy } from '@angular/common';
     DashboardComponent,
     RoomsComponent,
     RoomComponent,
-    UserFilterPipe
+    UserFilterPipe,
+    ReceptionComponent
   ],
   imports: [
     BrowserModule,

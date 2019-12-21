@@ -1,0 +1,9 @@
+<div class="btn-toolbar justify-content-between">
+    <div class="input-group">
+        <input type="text" class="form-control" placeholder="Room Number" [(ngModel)]="roomNo" (keyup.enter)="joinRoom()">
+        <div class="input-group-append">
+            <button class="btn btn-outline-primary" type="button" (click)="joinRoom()">Join a pointing room</button>
+        </div>
+    </div>
+    <button class="btn btn-primary" (click)="getRoom()">Get a Room</button>
+</div>

@@ -41,24 +41,6 @@ export class RoomsComponent implements OnInit, OnDestroy {
     this.router.navigate(['/room', roomNo]);
   }
 
-  getRoom() {
-    const roomNumber = this.getNextAvailableRoom();
-    if (roomNumber === 0) {
-      alert('No Room Available...');
-    } else {
-      this.router.navigate(['room', roomNumber]);
-    }
-  }
-
-  getNextAvailableRoom() {
-    for (let i = 0; i <= this.rooms.length; i++) {
-      if (!this.rooms[i].roomOwner) {
-        return this.rooms[i].roomNo;
-      }
-    }
-    return 0;
-  }
-
   roomTrackByFunction(index, item) {
     return item ? item.roomNo : undefined;
   }

@@ -30,6 +30,7 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
@@ -58,129 +59,133 @@ public class RoomController {
 	
 //	@SubscribeMapping("/rooms")
 	@GetMapping("/rooms")
-	public @ResponseBody List<Room> findAllRooms() {
+	public @ResponseBody Map<String, Room> findAllRooms() {
 		return this.roomService.findAllRooms();
 	}
 	
-	@GetMapping("/rooms/{id}/chat")
-	public @ResponseBody List<ChatMessage> getChatMessagesByRoom(@PathVariable Integer id) {
-		return this.roomService.findRoomById(id).getChat();
+	@GetMapping("/rooms/{roomId}/chat")
+	public @ResponseBody List<ChatMessage> getChatMessagesByRoom(@PathVariable String roomId) {
+		if(this.roomService.findRoomById(roomId) != null) {
+			return this.roomService.findRoomById(roomId).getChat();
+		}
+		return null;
 	}
 	
-	@SubscribeMapping("/rooms/{id}")
-	public Room findRoomById(@DestinationVariable Integer id) {
-		return this.roomService.findRoomById(id);
+	@SubscribeMapping("/rooms/{roomId}")
+	public Room findRoomById(@DestinationVariable String roomId) {
+		return this.roomService.findRoomById(roomId);
 	}
 	
-	@SubscribeMapping("/rooms/{id}/participants")
-	public List<User> getRoomParticipants(@DestinationVariable Integer id) {
-		return this.roomService.getParticipantsByRoomId(id);
+	@SubscribeMapping("/rooms/{roomId}/participants")
+	public List<User> getRoomParticipants(@DestinationVariable String roomId) {
+		return this.roomService.getParticipantsByRoomId(roomId);
 	}
 	
-	@SubscribeMapping("/topic/rooms/{id}/event")
-	public String getRoomStatus(@DestinationVariable Integer id) {
-		return this.roomService.findRoomById(id).getStatus();
+	@SubscribeMapping("/topic/rooms/{roomId}/event")
+	public String getRoomStatus(@DestinationVariable String roomId) {
+		return this.roomService.findRoomById(roomId).getStatus();
 	}
 	
-	@GetMapping("/topic/rooms/{id}/results")
-	public Map getVoteResults(@PathVariable Integer id) {
-		return this.roomService.findRoomById(id).getVoteCounts();
+	@GetMapping("/topic/rooms/{roomId}/results")
+	public Map<Integer, Integer> getVoteResults(@PathVariable String roomId) {
+		return this.roomService.findRoomById(roomId).getVoteCounts();
 	}
 	
-	@MessageMapping("/rooms")
-	@SendTo("/topic/rooms/created")
-	public Room createRoom() {
-		return roomService.createRoom();
+//	@MessageMapping("/rooms")
+//	@SendTo("/topic/rooms/created")
+	@PostMapping("/rooms")
+	public @ResponseBody String createRoom() {
+		return roomService.createRoom().getRoomId();
 	}
 	
-	@MessageMapping("/rooms/{id}/participant/update")
-	public void userUserInRoom(@DestinationVariable Integer id, @Payload String userString,
+	@MessageMapping("/rooms/{roomId}/participant/update")
+	public void userUserInRoom(@DestinationVariable String roomId, @Payload String userString,
 			  @Header("simpSessionId") String sessionId) throws JsonParseException, JsonMappingException, IOException {
 		User user = mapper.readValue(userString, User.class);
 		System.out.println("User name updating..." + user);
-		List<User> participants = roomService.updateParticipant(id, user);
-		messagingTemplate.convertAndSend("/topic/rooms/" + id + "/participants", participants);
+		List<User> participants = roomService.updateParticipant(roomId, user);
+		messagingTemplate.convertAndSend("/topic/rooms/" + roomId + "/participants", participants);
 	}
 	
-	@MessageMapping("/rooms/{id}/join")
-	public void joinRoom(@DestinationVariable Integer id, @Payload String userString,
-			  @Header("simpSessionId") String sessionId) throws JsonParseException, JsonMappingException, IOException {
+	@MessageMapping("/rooms/{roomId}/join")
+	public void joinRoom(@DestinationVariable String roomId, @Payload String userString,
+			  @Header("simpSessionId") String sessionId) throws IOException {
 		User user1 = mapper.readValue(userString, User.class);
 		System.out.println("User joining..." + user1);
 //		this.sessions.put(sessionId, new UserRoom(id, user1));
 		System.out.println(sessionId);
 		this.sessionRoomDictionary.put(sessionId, user1.getId());
 		if( this.sessions.containsKey(user1.getId()) ) {
-			this.sessions.get(user1.getId()).add(new SessionRoom(sessionId, id, user1));
+			this.sessions.get(user1.getId()).add(new SessionRoom(sessionId, roomId, user1));
 		} else {
 			List<SessionRoom> list = new ArrayList();
-			list.add(new SessionRoom(sessionId, id, user1));
+			list.add(new SessionRoom(sessionId, roomId, user1));
 			this.sessions.put(user1.getId(), list);
 		}
-		roomService.joinRoom(id, user1);
-		Room room = this.roomService.findRoomById(id);
-		messagingTemplate.convertAndSend("/topic/rooms/" + id, room);
-		messagingTemplate.convertAndSend("/topic/rooms/" + id + "/participants", room.getParticipants());
+		roomService.joinRoom(roomId, user1);
+		Room room = this.roomService.findRoomById(roomId);
+		messagingTemplate.convertAndSend("/topic/rooms/" + roomId, room);
+		messagingTemplate.convertAndSend("/topic/rooms/" + roomId + "/participants", room.getParticipants());
 		if(room.getStatus().equals(PointMeConstants.RESULTS_ROOM_STATUS)) {			
-			Map voteCounts = this.findRoomById(id).getVoteCounts();
-			messagingTemplate.convertAndSend("/topic/rooms/" + id + "/results", voteCounts);
+			Map voteCounts = this.findRoomById(roomId).getVoteCounts();
+			messagingTemplate.convertAndSend("/topic/rooms/" + roomId + "/results", voteCounts);
 		}
 	}
 	
-	@MessageMapping("/rooms/{id}/start-voting")
-	public void startVote(@DestinationVariable Integer id) {
-		this.roomService.createVotingBox(id);
-		this.roomService.findRoomById(id).setStatus(PointMeConstants.VOTING_ROOM_STATUS);
-		messagingTemplate.convertAndSend("/topic/rooms/" + id + "/event", PointMeConstants.VOTING_ROOM_STATUS);
+	@MessageMapping("/rooms/{roomId}/start-voting")
+	public void startVote(@DestinationVariable String roomId) {
+		this.roomService.createVotingBox(roomId);
+		this.roomService.findRoomById(roomId).setStatus(PointMeConstants.VOTING_ROOM_STATUS);
+		messagingTemplate.convertAndSend("/topic/rooms/" + roomId + "/event", PointMeConstants.VOTING_ROOM_STATUS);
 	}
 	
-	@MessageMapping("/rooms/{id}/show-results")
-	public void stopVote(@DestinationVariable Integer id) {
-		this.roomService.findRoomById(id).setStatus(PointMeConstants.RESULTS_ROOM_STATUS);
-		messagingTemplate.convertAndSend("/topic/rooms/" + id + "/event", PointMeConstants.RESULTS_ROOM_STATUS);
-		Map<Integer, Integer> results = this.roomService.countVotes(id);
-		messagingTemplate.convertAndSend("/topic/rooms/" + id + "/results", results);
+	@MessageMapping("/rooms/{roomId}/show-results")
+	public void stopVote(@DestinationVariable String roomId) {
+		this.roomService.findRoomById(roomId).setStatus(PointMeConstants.RESULTS_ROOM_STATUS);
+		messagingTemplate.convertAndSend("/topic/rooms/" + roomId + "/event", PointMeConstants.RESULTS_ROOM_STATUS);
+		Map<Integer, Integer> results = this.roomService.countVotes(roomId);
+		messagingTemplate.convertAndSend("/topic/rooms/" + roomId + "/results", results);
 	}
 	
-	@MessageMapping("/rooms/{id}/reset")
-	public void goToDefaultState(@DestinationVariable Integer id) {
-		this.roomService.resetRoom(id);
-		messagingTemplate.convertAndSend("/topic/rooms/" + id + "/event", "default");
-		this.roomService.clearParticipantVotingByRoom(id);
-		messagingTemplate.convertAndSend("/topic/rooms/" + id + "/participants", this.findRoomById(id).getParticipants());
+	@MessageMapping("/rooms/{roomId}/reset")
+	public void goToDefaultState(@DestinationVariable String roomId) {
+		this.roomService.resetRoom(roomId);
+		messagingTemplate.convertAndSend("/topic/rooms/" + roomId + "/event", "default");
+		this.roomService.clearParticipantVotingByRoom(roomId);
+		messagingTemplate.convertAndSend("/topic/rooms/" + roomId + "/participants", this.findRoomById(roomId).getParticipants());
 	}
 	
-	@MessageMapping("/rooms/{id}/cast-vote")
-	public void castVote(@DestinationVariable Integer id, @Payload String payload) throws JsonParseException, JsonMappingException, IOException {
+	@MessageMapping("/rooms/{roomId}/cast-vote")
+	public void castVote(@DestinationVariable String roomId, @Payload String payload) throws JsonParseException, JsonMappingException, IOException {
 		Vote vote = mapper.readValue(payload, Vote.class);
-		this.roomService.castVote(id, vote);
+		this.roomService.castVote(roomId, vote);
 		System.out.println(vote.getUser().getName() + " voted for " + vote.getValue());
-		messagingTemplate.convertAndSend("/topic/rooms/" + id + "/participants", this.getRoomParticipants(id));
+		messagingTemplate.convertAndSend("/topic/rooms/" + roomId + "/participants", this.getRoomParticipants(roomId));
 	}
 	
-	@MessageMapping("/rooms/{id}/chat")
-	public void handleChatMessage(@DestinationVariable Integer id, @Payload String payload) throws JsonParseException, JsonMappingException, IOException {
+	@MessageMapping("/rooms/{roomId}/chat")
+	public void handleChatMessage(@DestinationVariable String roomId, @Payload String payload) throws JsonParseException, JsonMappingException, IOException {
 		ChatMessage msg = mapper.readValue(payload, ChatMessage.class);
 		System.out.println(msg.getMessage());
-		List<ChatMessage> chat = this.roomService.logChatMessage(id, msg);
-		messagingTemplate.convertAndSend("/topic/rooms/" + id + "/chat", chat);
+		List<ChatMessage> chat = this.roomService.logChatMessage(roomId, msg);
+		messagingTemplate.convertAndSend("/topic/rooms/" + roomId + "/chat", chat);
 	}
 	
-	@MessageMapping("/rooms/{id}/cards")
-	public void handleRoomCardsUpdate(@DestinationVariable Integer id, @Payload String payload) throws JsonMappingException, JsonProcessingException {
+	@MessageMapping("/rooms/{roomId}/cards")
+	public void handleRoomCardsUpdate(@DestinationVariable String roomId, @Payload String payload) throws JsonProcessingException {
 		List<Card> newCards = mapper.readValue(payload, new TypeReference<List<Card>>(){});
-		Room room = this.roomService.updateCards(id, newCards);
-		messagingTemplate.convertAndSend("/topic/rooms/" + id, room);
+		Room room = this.roomService.updateCards(roomId, newCards);
+		messagingTemplate.convertAndSend("/topic/rooms/" + roomId, room);
 	}
 	
-	@MessageMapping("/rooms/{id}/disconnect")
-	public void disconnectRoom(@DestinationVariable Integer id, String userString, @Header("simpSessionId") String sessionId) throws JsonParseException, JsonMappingException, IOException {
+	@MessageMapping("/rooms/{roomId}/disconnect")
+	public void disconnectRoom(@DestinationVariable String roomId, String userString, @Header("simpSessionId") String sessionId) throws IOException {
 		System.out.println("User disconnecting...");
 		User user = mapper.readValue(userString, User.class);
-		roomService.disconnectRoom(id, user);
+		roomService.disconnectRoom(roomId, user);
 		this.removeBySession(sessionId);
-		messagingTemplate.convertAndSend("/topic/rooms/" + id, this.roomService.findRoomById(id));
-		messagingTemplate.convertAndSend("/topic/rooms/" + id + "/participants", this.roomService.findRoomById(id).getParticipants());
+		messagingTemplate.convertAndSend("/topic/rooms/" + roomId, this.roomService.findRoomById(roomId));
+		messagingTemplate.convertAndSend("/topic/rooms/" + roomId + "/participants", this.roomService.findRoomById(roomId).getParticipants());
 	}
 	
 	private void removeBySession(String sessionId) {
@@ -228,7 +233,7 @@ public class RoomController {
 	        
 	       String userString = mapper.writeValueAsString(record.getUser());
 	        
-	        this.disconnectRoom(record.getRoomNo(), userString, event.getSessionId());
+	        this.disconnectRoom(record.getRoomId(), userString, event.getSessionId());
 	        
 	//        this.messagingTemplate.convertAndSend("/topic/rooms/" + roomNo, this.roomService.findRoomById(roomId));
 	//        String username = (String) headerAccessor.getSessionAttributes().get("username");

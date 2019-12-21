@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.aashish.pointme.PointMeConstants;
 
@@ -13,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Room implements Serializable{
 	
 	private static final long serialVersionUID = 5564146684586467617L;
-	private Integer roomNo;
+	private String roomId;
 	private RoomDesciption roomDesc;
 	private String status;
 	private User roomOwner;
@@ -30,24 +31,21 @@ public class Room implements Serializable{
 	
 	public Room() {
 		setStatus(PointMeConstants.DEFAULT_ROOM_STATUS);
+		String[] split = UUID.randomUUID().toString().split("-");
+		roomId = split[split.length-1];//last part of 32 char long UUID
 		cards.add(new Card(1));
 		cards.add(new Card(2));
 		cards.add(new Card(3));
-		cards.add(new Card(4));
 		cards.add(new Card(5));
+		cards.add(new Card(8));
 	}
 	
-	public Room(Integer roomNo) {
-		this();
-		this.roomNo = roomNo;
+	public String getRoomId() {
+		return roomId;
 	}
 
-	public Integer getRoomNo() {
-		return roomNo;
-	}
-
-	public void setRoomNo(Integer roomNo) {
-		this.roomNo = roomNo;
+	public void setRoomId(String roomId) {
+		this.roomId = roomId;
 	}
 
 	public RoomDesciption getRoomDesc() {

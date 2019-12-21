@@ -3,14 +3,14 @@ package org.aashish.pointme.dto;
 public class SessionRoom {
 	
 	private String sessionId;
-	private Integer roomNo;
+	private String roomId;
 	private User user;
 	
 	public SessionRoom() {}
 
-	public SessionRoom(String sessionId, Integer roomNo, User user) {
+	public SessionRoom(String sessionId, String roomId, User user) {
 		this.sessionId = sessionId;
-		this.roomNo = roomNo;
+		this.roomId = roomId;
 		this.user = user;
 	}
 
@@ -22,12 +22,12 @@ public class SessionRoom {
 		this.sessionId = sessionId;
 	}
 
-	public Integer getRoomNo() {
-		return roomNo;
+	public String getRoomId() {
+		return roomId;
 	}
 
-	public void setRoomNo(Integer roomNo) {
-		this.roomNo = roomNo;
+	public void setRoomId(String roomId) {
+		this.roomId = roomId;
 	}
 
 	public User getUser() {
