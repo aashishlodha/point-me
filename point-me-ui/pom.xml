@@ -7,9 +7,7 @@
     <artifactId>point-me</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <groupId>org.aashish</groupId>
   <artifactId>point-me-ui</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
   <name>point-me-ui</name>
   <url>http://maven.apache.org</url>
   <properties>

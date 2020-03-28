@@ -15,7 +15,7 @@ chrome-profiler-events*.json
 speed-measure-plugin*.json
 
 ## API ##
-point-me-service/src/main/resources/static/
+**/static/**
 !/point-me-service/.mvn/wrapper/maven-wrapper.jar
 /point-me-service/HELP.md
 
