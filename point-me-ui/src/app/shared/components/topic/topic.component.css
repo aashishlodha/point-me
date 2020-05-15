@@ -1,0 +1,13 @@
+.topic-state-msg {
+  color: darkgrey;
+  font-size: 0.8rem;
+}
+.result-card {
+  height: 4rem;
+  width: 2.6rem;
+  text-align: center;
+  color: white;
+  background-color: royalblue;
+  border-radius: .4rem;
+  border: .4rem solid white;
+}

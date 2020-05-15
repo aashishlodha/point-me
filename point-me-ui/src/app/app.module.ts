@@ -16,6 +16,7 @@ import { UserFilterPipe } from './shared/userfilter.pipe';
 import { RoomsComponent } from './rooms/rooms.component';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { ReceptionComponent } from './reception/reception.component';
+import { RoomV2Component } from './room-v2/room-v2.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { ReceptionComponent } from './reception/reception.component';
     RoomsComponent,
     RoomComponent,
     UserFilterPipe,
-    ReceptionComponent
+    ReceptionComponent,
+    RoomV2Component
   ],
   imports: [
     BrowserModule,

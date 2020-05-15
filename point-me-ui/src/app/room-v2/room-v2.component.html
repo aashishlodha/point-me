@@ -1,0 +1,24 @@
+<nav class="navbar shadow sticky-top navbar-light bg-light">
+    <span class="navbar-brand mb-0 h1">Point Me</span>
+    <span>Room No #{{roomId}}</span>
+    <span *ngIf="room && room.ownerName">Owner: {{ room.ownerName }}</span>
+</nav>
+<div class="container">
+    <div class="row" *ngIf="!isLoading">
+        <div class="col-md-9 p-0" *ngIf="!errorMessage">
+            <app-topic [topicId]="room.currentTopicId"></app-topic>
+        </div>
+        <div class="col-md-3 p-0 pl-xs-0 pl-md-2" *ngIf="!errorMessage">
+            <app-participants></app-participants>
+        </div>
+        <div class="alert alert-danger" *ngIf="errorMessage">
+          <strong>Error!</strong><br/>{{errorMessage}}. <br/>Redirecting to Dashboard...
+        </div>
+        <br>
+    </div>
+    <div class="row" *ngIf="isLoading">
+        <div class="centered">
+            No Data? <button (click)="refresh()">Refresh?</button>
+        </div>
+    </div>
+</div>

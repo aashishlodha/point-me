@@ -1,0 +1,66 @@
+<!-- <div class="card bg-light mb-2 mt-4">
+      <div class="card-header text-center"><b>Description</b></div>
+      <div class="card-body">This story has no desc</div>
+  </div> -->
+<div class="card bg-light mt-4" *ngIf="topic">
+    <div class="card-header"><b>{{topic.name}}</b>
+      <div class="btn-group btn-group-sm float-right" *ngIf="isOwner">
+        <button class="btn btn-primary" *ngIf="topic.state === 'IN_DISCUSSION'" (click)="openTopic()">
+          Edit <span class="oi oi-cog"></span>
+        </button>
+        <button class="btn btn-primary" *ngIf="topic.state === 'IN_DISCUSSION'" (click)="startVoting()">
+          Start Voting <span class="oi oi-media-play"></span>
+        </button>
+        <button class="btn btn-primary" *ngIf="topic.state === 'IN_VOTING'" (click)="showVotes()">
+          Show Results <span class="oi oi-pie-chart"></span>
+        </button>
+        <button class="btn btn-primary" *ngIf="topic.state === 'IN_RESULTS'" (click)="reset()">
+          Finish Topic <span class="oi oi-media-stop"></span>
+        </button>
+      </div>
+    </div>
+    <div class="card-body inset-shadow">
+        <div>
+          <p>{{topic.desc}}</p>
+        </div>
+        <div class="text-center topic-state-msg">
+          <span *ngIf="topic.state === 'IN_DISCUSSION'">Voting is not started yet...</span>
+          <span *ngIf="topic.state === 'IN_VOTING'">Please Vote...</span>
+          <span *ngIf="topic.state === 'IN_RESULTS'">Here are the results...</span>
+        </div>
+        <div *ngIf="topic.state === 'IN_DISCUSSION'">
+            <app-playing-card
+                *ngFor="let card of cards"
+                [value]="card"
+                style="float:left;">
+            </app-playing-card>
+        </div>
+        <div *ngIf="topic.state === 'IN_VOTING'">
+            <div class="card-deck">
+                <app-playing-card
+                    *ngFor="let card of cards"
+                    [value]="card"
+                    style="float:left;"
+                    [selectedCard]="selectedCard"
+                    (selected)="handleCardSelection($event)">
+                </app-playing-card>
+            </div>
+        </div>
+        <div *ngIf="topic.state === 'IN_RESULTS' && results">
+            <div class="card" *ngFor="let result of results | keyvalue" class="row">
+              <div class="result-card shadow">{{result.key}}</div>
+              <b>Votes: {{result.value.length}}</b>
+              <ul>
+                <li *ngFor="let name of result.value">{{name}}</li>
+              </ul>
+            </div>
+        </div>
+    </div>
+    <div class="card-body inset-shadow"
+      *ngIf="topic && topic.state !== 'IN_RESULTS'">
+      <app-chat [topicId]="topicId"></app-chat>
+    </div>
+</div>
+<!-- <div class="card bg-light mt-4" *ngIf="topic && topic.state !== 'IN_RESULTS'">
+    <app-chat></app-chat>
+</div> -->

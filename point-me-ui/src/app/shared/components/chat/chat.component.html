@@ -1,0 +1,12 @@
+<!-- <div class="card-header text-center"><b>Chat</b></div> -->
+<h4>Chat</h4>
+<!-- <div class="card-body inset-shadow"> -->
+<div>
+  <div *ngFor="let msg of chatMessages"> <b>{{ msg.byName }}: </b> {{ msg.text }}</div>
+  <div class="input-group mb-3">
+      <input type="text" class="form-control" placeholder="Enter a message" [(ngModel)]="chatMessageInput" (keyup.enter)="sendChatMessage()">
+      <div class="input-group-append">
+          <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="sendChatMessage()">Send</button>
+      </div>
+  </div>
+</div>

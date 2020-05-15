@@ -7,9 +7,9 @@ import { Component, OnInit, Input, EventEmitter, Output, OnChanges, SimpleChange
 })
 export class PlayingCardComponent implements OnInit, OnChanges {
 
-  @Input() value: number;
-  @Input() selectedCard: number;
-  @Output() selected = new EventEmitter<number>();
+  @Input() value: string;
+  @Input() selectedCard: string;
+  @Output() selected = new EventEmitter<string>();
 
   constructor() { }
 
@@ -19,7 +19,7 @@ export class PlayingCardComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     // console.log(changes);
     if (changes && changes.selectedCard) {
-      this.selectedCard = changes.selectedCard.currentValue;
+      this.selectedCard = '' + changes.selectedCard.currentValue;
     }
   }
 

@@ -1,0 +1,32 @@
+<div class="modal-header">
+  <h4 class="modal-title" id="modal-basic-title">Card Deck Configuration</h4>
+  <button type="button" class="close" aria-label="Close" (click)="closePopup()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="input-group mb-3">
+    <input type="text" class="form-control" [(ngModel)]="topicInstance.name" placeholder="Please add topic name...">
+  </div>
+
+  <div class="input-group mb-3">
+    <input type="text" class="form-control" [(ngModel)]="topicInstance.desc" placeholder="Topic description goes here...">
+  </div>
+
+  <div class="input-group mb-3">
+    <input type="text" class="form-control" placeholder="Enter card value"
+    #cardValueInput name="cardValueInput"
+    (keyup.enter)="addCardValueInSetting(cardValueInput.value);cardValueInput.value=''">
+    <div class="input-group-append">
+        <button class="btn btn-outline-success" type="button" id="button-addon2"
+        (click)="addCardValueInSetting(cardValueInput.value);cardValueInput.value=''">Add</button>
+    </div>
+  </div>
+
+  <span *ngFor="let card of cards;index as i" class="badge badge-info" style="margin-right:4px;">{{ card }}
+    <button class="btn btn-danger btn-sm" (click)="removeCardInSetting(i)">x</button>
+  </span>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-dark" (click)="updateTopic()">Save</button>
+</div>

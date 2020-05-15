@@ -1,0 +1,17 @@
+<div class="card bg-light mt-4" *ngIf="participants">
+  <div class="card-header text-center"><b>Participants</b></div>
+  <!-- <div class="input-group">
+      <div class="input-group-prepend">
+          <span class="input-group-text">@</span>
+      </div>
+      <input type="text" class="form-control" [(ngModel)]="user.name" (change)="userNameChanged()">
+  </div> -->
+  <ul class="list-group list-group-flush">
+      <li class="list-group-item" *ngFor="let participant of participants;trackBy: trackByFn">
+          {{participant.name}}
+          <span *ngIf="participant.voted">(Voted)</span>
+          <!-- <span *ngIf="roomMode === 'voting' && participant.voteValue !== null">(Voted)</span>
+          <span *ngIf="roomMode === 'results'"> {{ participant.voteValue }}</span> -->
+      </li>
+  </ul>
+</div>
