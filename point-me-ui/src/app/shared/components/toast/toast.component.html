@@ -1,0 +1,4 @@
+<ngb-toast
+  *ngFor="let toast of toastService.toasts" class="bg-success text-light" [autohide]="true" [delay]="2000"
+  (hide)="toastService.remove(toast)"
+>{{toast}}</ngb-toast>

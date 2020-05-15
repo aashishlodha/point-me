@@ -9,6 +9,9 @@ import { FormsModule } from '@angular/forms';
 import { TopicComponent } from './components/topic/topic.component';
 import { NamePopupComponent } from './components/name-popup/name-popup.component';
 import { TopicEditComponent } from './components/topic-edit/topic-edit.component';
+import { ToastComponent } from './components/toast/toast.component';
+import { NgbToastModule } from '@ng-bootstrap/ng-bootstrap';
+import { ToastService } from './services/toast.service';
 
 @NgModule({
   declarations: [
@@ -17,15 +20,18 @@ import { TopicEditComponent } from './components/topic-edit/topic-edit.component
     ChatComponent,
     TopicComponent,
     NamePopupComponent,
-    TopicEditComponent
+    TopicEditComponent,
+    ToastComponent
   ],
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    NgbToastModule
   ],
   providers: [
     RoomService,
-    UserService
+    UserService,
+    ToastService
   ],
   exports: [
     PlayingCardComponent,
@@ -33,7 +39,8 @@ import { TopicEditComponent } from './components/topic-edit/topic-edit.component
     ChatComponent,
     TopicComponent,
     NamePopupComponent,
-    TopicEditComponent
+    TopicEditComponent,
+    ToastComponent
   ],
   entryComponents: [NamePopupComponent, TopicEditComponent]
 })

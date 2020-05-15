@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs';
 import { UserService } from '../shared/services/user.service';
 import { environment } from 'src/environments/environment';
 import { Room } from '../shared/models/room.model';
+import { ToastService } from '../shared/services/toast.service';
 
 @Component({
   selector: 'app-room',
@@ -25,7 +26,8 @@ export class RoomV2Component implements OnInit, OnDestroy {
 
   constructor(private rxStompService: RxStompService, private route: ActivatedRoute,
               private userService: UserService, private http: HttpClient,
-              private modalService: NgbModal, private router: Router) { }
+              private modalService: NgbModal, private router: Router,
+              private toastService: ToastService) { }
 
   ngOnInit() {
     this.roomParamSub = this.route.params.subscribe(params => {
@@ -54,6 +56,18 @@ export class RoomV2Component implements OnInit, OnDestroy {
           break;
       }
     });
+  }
+
+  copyToClipboard(val: string) {
+    const selBox = document.createElement('input');
+    selBox.style.display = 'hidden';
+    selBox.value = val;
+    document.body.appendChild(selBox);
+    selBox.focus();
+    selBox.select();
+    document.execCommand('copy');
+    document.body.removeChild(selBox);
+    this.toastService.show('Room Number Copied!');
   }
 
   refresh() {

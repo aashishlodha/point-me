@@ -1,6 +1,6 @@
 <nav class="navbar shadow sticky-top navbar-light bg-light">
     <span class="navbar-brand mb-0 h1">Point Me</span>
-    <span>Room No #{{roomId}}</span>
+    <span>Room No <span class="text-primary" style="cursor:pointer;" (click)="copyToClipboard(roomId)">{{roomId}}</span></span>
     <span *ngIf="room && room.ownerName">Owner: {{ room.ownerName }}</span>
 </nav>
 <div class="container">
